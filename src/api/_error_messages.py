@@ -1,0 +1,8 @@
+USER_ALREADY_EXISTS = 'user already exists'
+USER_NOT_FOUND = 'user not found'
+PRODUCT_NOT_FOUND = 'product not found'
+LOW_USER_BALANCE = 'low user balance, not enough {} coins'
+IDEMPOTENCY_KEY_NOT_FOUND = 'Idempotency-Key header required'
+INVENTORY_NOT_FOUND = 'inventory not found'
+PERMANENT_PRODUCT_USING = 'only consumable products allowed to be used'
+NOT_ENOUGH_PRODUCT_IN_INVENTORY = 'not enough product in inventory'
