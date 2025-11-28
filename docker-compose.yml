@@ -31,6 +31,33 @@ services:
       - postgres
       - redis
 
+  postgres-test:
+    image: postgres:16.9-bookworm
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: postgres_db_test
+    ports:
+      - 54320:5432
+    volumes:
+      - postgres_test_data_test:/var/lib/postgresql/data
+  
+  backend-test:
+    build:
+      context: ./
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DSN: postgresql+asyncpg://postgres_user:postgres_password@postgres-test:5432/postgres_db_test
+    volumes:
+      - ./src:/opt/app/src/
+      - ./tests:/opt/app/tests/
+      - ./pyproject.toml:/opt/app/pyproject.toml
+      - ./uv.lock:/opt/app/uv.lock
+    command: 'echo Skipped'
+    depends_on:
+      - postgres-test
+
   redis:
     image: redis:7.4-bookworm
     ports:
@@ -38,3 +65,4 @@ services:
 
 volumes:
   postgres_data_test:
+  postgres_test_data_test:
