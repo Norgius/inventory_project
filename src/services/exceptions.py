@@ -12,3 +12,7 @@ class PermanentProductUsingError(Exception):
 
 class NotEnoughProductInInventoryError(Exception):
     pass
+
+
+class PurchaseProductError(Exception):
+    pass

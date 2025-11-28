@@ -1,1 +1,1 @@
-from ._db import Base, async_session_maker, get_async_session
+from ._db import Base, async_session_maker, get_async_session, engine

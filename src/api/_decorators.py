@@ -8,9 +8,9 @@ from pydantic import BaseModel
 from redis.asyncio.client import Redis
 
 from env_settings import settings
-from .utils import key_builder
 
 from ._error_messages import IDEMPOTENCY_KEY_NOT_FOUND
+from .utils import key_builder
 
 
 def find_request(func: Callable[..., Any], **kwargs: dict[str, Any]) -> Request:
@@ -42,6 +42,9 @@ def idempotent(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=IDEMPOTENCY_KEY_NOT_FOUND,
                 )
+
+            if settings.REDIS_DSN is None:
+                return await func(*args, **kwargs)
 
             copy_kwargs = kwargs.copy()
             copy_kwargs.pop(key_request)

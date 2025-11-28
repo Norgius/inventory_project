@@ -9,6 +9,7 @@ class RateLimiterSettings(BaseModel):
 
 class CacheNamespace(BaseModel):
     ADD_FUNDS: str = 'add-funds'
+    POPULAR_PRODUCTS: str = 'popular-products'
 
 
 class CacheConfig(BaseModel):
@@ -23,7 +24,7 @@ class CacheConfig(BaseModel):
 class ENV(BaseSettings):
     POSTGRES_DSN: PostgresDsn
     """Подключение к PostgreSQL."""
-    REDIS_DSN: RedisDsn
+    REDIS_DSN: RedisDsn | None = None
     """Подключение к Redis."""
     CACHE_CONFIG: CacheConfig = CacheConfig()
     """Настройки для кэша"""

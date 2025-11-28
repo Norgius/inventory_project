@@ -33,7 +33,7 @@ class UserDatabaseService(DatabaseService):
         return results.unique().scalar_one_or_none()
 
     async def add_funds(self, user: User, amount: int) -> User:
-        user.balance = user.balance + amount
+        user.balance += amount
         self.session.add(user)
         await self.session.commit()
         await self.session.refresh(user)

@@ -36,6 +36,6 @@ def key_builder(
         cache_kwargs[key] = value
 
     cache_key = hashlib.md5(
-        f'{func.__module__}:{func.__name__}:{args}:{cache_kwargs}:{idempotency_key}'.encode()
+        f'{func.__module__}:{func.__name__}:{args}:{cache_kwargs}:{idempotency_key}'.encode(),
     ).hexdigest()
     return f'{namespace}:{cache_key}'

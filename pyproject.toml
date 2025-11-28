@@ -8,12 +8,15 @@ dependencies = [
     "alembic>=1.17.2",
     "asyncpg>=0.30.0",
     "fastapi-cache2>=0.2.2",
-    "fastapi-limiter>=0.1.6",
     "fastapi[standard]>=0.121.3",
     "httpx>=0.28.1",
     "pydantic-settings>=2.12.0",
+    "pytest>=9.0.1",
+    "pytest-asyncio>=1.3.0",
     "redis>=7.1.0",
+    "slowapi>=0.1.9",
     "sqlalchemy>=2.0.44",
+    "sqlalchemy-utils>=0.42.0",
 ]
 
 [tool.ruff]
@@ -90,5 +93,6 @@ asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "session"
 addopts = [
   "-vv",				        # подробный вывод хода теста
-  "--import-mode=importlib"  	# меньше проблем с импортами
+  "--import-mode=importlib",  	# меньше проблем с импортами
+  '-s'
 ]

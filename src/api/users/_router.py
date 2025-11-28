@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
-from fastapi_limiter.depends import RateLimiter
 
 from env_settings import settings
 from services import (
@@ -24,11 +23,14 @@ from ._schemas import (
 from .._common_types import ErrorModel
 from .._decorators import idempotent
 from .._error_messages import USER_ALREADY_EXISTS, USER_NOT_FOUND
+from app_context import limiter_var
 
 router = APIRouter(
     prefix='/users',
     tags=['users'],
 )
+
+limiter = limiter_var.get()
 
 
 @router.post(
@@ -40,11 +42,10 @@ router = APIRouter(
         status.HTTP_422_UNPROCESSABLE_CONTENT: {'model': ErrorModel},
         status.HTTP_429_TOO_MANY_REQUESTS: {'model': ErrorModel},
     },
-    dependencies=[
-        Depends(RateLimiter(times=settings.RATE_LIMITER.TIMES, seconds=settings.RATE_LIMITER.SECONDS)),
-    ],
 )
+@limiter.limit('10/minute')
 async def register(
+    request: Request,
     register_data: RegisterUserRequest,
     user_database_service: UserDatabaseService = Depends(get_user_database_service),
 ):
@@ -72,9 +73,6 @@ async def register(
         status.HTTP_422_UNPROCESSABLE_CONTENT: {'model': ErrorModel},
         status.HTTP_429_TOO_MANY_REQUESTS: {'model': ErrorModel},
     },
-    dependencies=[
-        Depends(RateLimiter(times=settings.RATE_LIMITER.TIMES, seconds=settings.RATE_LIMITER.SECONDS)),
-    ],
 )
 @idempotent(
     expire=settings.CACHE_CONFIG.IDEMPOTENTY_TIMER,

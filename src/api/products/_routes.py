@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from services import (
@@ -14,6 +16,7 @@ from services.exceptions import (
     InventoryNotFoundError,
     NotEnoughProductInInventoryError,
     PermanentProductUsingError,
+    PurchaseProductError,
 )
 
 from ._schemas import (
@@ -30,6 +33,7 @@ from .._error_messages import (
     NOT_ENOUGH_PRODUCT_IN_INVENTORY,
     PERMANENT_PRODUCT_USING,
     PRODUCT_NOT_FOUND,
+    PURCHASE_PRODUCT_ERROR,
     USER_NOT_FOUND,
 )
 from ..utils import check_balance
@@ -38,6 +42,8 @@ router = APIRouter(
     prefix='/products',
     tags=['products'],
 )
+
+logger = logging.getLogger('__name__')
 
 
 @router.post(
@@ -96,7 +102,14 @@ async def purchase_product(
             status_code=status.HTTP_409_CONFLICT,
             detail=LOW_USER_BALANCE.format(difference),
         )
-    inventory = await transaction_database_service.purchase_product(user=user, product=product)
+    try:
+        inventory = await transaction_database_service.purchase_product(user=user, product=product)
+    except PurchaseProductError as e:
+        logger.error(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=PURCHASE_PRODUCT_ERROR,
+        )
     return InventoryResponse.model_validate(
         inventory,
         from_attributes=True,

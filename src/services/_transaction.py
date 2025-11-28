@@ -8,33 +8,38 @@ from orm.models import Product, ProductType, Transaction, TransactionStatus, Use
 
 from ._base import DatabaseService
 from ._inventory import InventoryDatabaseService
+from .exceptions import PurchaseProductError
 
 
 class TransactionDatabaseService(DatabaseService):
     model = Transaction
 
     async def purchase_product(self, user: User, product: Product):
-        user.balance -= product.price
-        self.session.add(user)
+        try:
+            user.balance -= product.price
+            self.session.add(user)
 
-        inventory_database_service = InventoryDatabaseService(session=self.session)
-        inventory, created = await inventory_database_service.get_or_create(
-            user_id=user.id,
-            product=product,
-        )
-        if not created and product.type == ProductType.consumable:
-            await inventory_database_service.increase_product_quantity(inventory=inventory)
+            inventory_database_service = InventoryDatabaseService(session=self.session)
+            inventory, created = await inventory_database_service.get_or_create(
+                user_id=user.id,
+                product=product,
+            )
+            if not created and product.type == ProductType.consumable:
+                await inventory_database_service.increase_product_quantity(inventory=inventory)
 
-        transaction = self.model(
-            user_id=user.id,
-            product_id=product.id,
-            amount=product.price,
-            status=TransactionStatus.completed,
-        )
-        self.session.add(transaction)
-        await self.session.commit()
-        await self.session.refresh(inventory)
-        return inventory
+            transaction = self.model(
+                user_id=user.id,
+                product_id=product.id,
+                amount=product.price,
+                status=TransactionStatus.completed,
+            )
+            self.session.add(transaction)
+            await self.session.commit()
+            await self.session.refresh(inventory)
+            return inventory
+        except Exception as e:
+            await self.session.rollback()
+            raise PurchaseProductError from e
 
 
 async def get_transaction_database_service(
