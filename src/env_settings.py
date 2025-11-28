@@ -1,3 +1,4 @@
+from typing import Literal
 from pydantic import BaseModel, PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -22,6 +23,7 @@ class CacheConfig(BaseModel):
 
 
 class ENV(BaseSettings):
+    MODE: Literal['dev', 'test', 'prod']
     POSTGRES_DSN: PostgresDsn
     """Подключение к PostgreSQL."""
     REDIS_DSN: RedisDsn | None = None

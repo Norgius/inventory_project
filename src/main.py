@@ -21,9 +21,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if settings.REDIS_DSN:
         redis_client = aioredis.from_url(str(settings.REDIS_DSN))
         app.state.redis_client = redis_client
-        FastAPICache.init(RedisBackend(redis_client), prefix="fastapi-cache")
+        cache_backend_client = RedisBackend(redis_client)
     else:
-        FastAPICache.init(InMemoryBackend(), prefix="fastapi-cache")
+        cache_backend_client = InMemoryBackend()
+
+    FastAPICache.init(cache_backend_client, prefix="fastapi-cache")
     app.state.main_app = app.state
 
     yield
@@ -31,6 +33,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if settings.REDIS_DSN:
         await redis_client.close()
 
+
+if settings.MODE == 'test':
+    cache_backend_client = InMemoryBackend()
+    FastAPICache.init(cache_backend_client, prefix="fastapi-cache")
 
 app = FastAPI(lifespan=lifespan)
 
