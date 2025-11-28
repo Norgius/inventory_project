@@ -18,7 +18,7 @@ router = APIRouter(
     response_model=list[ProductResponse],
 )
 @cache(
-    expire=3600,
+    expire=900,
     key_builder=key_builder,
     namespace=settings.CACHE_CONFIG.NAMESPACE.POPULAR_PRODUCTS,
 )
