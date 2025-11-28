@@ -1,20 +1,21 @@
-import asyncio
-
 import pytest
 from sqlalchemy import insert
+from httpx import ASGITransport, AsyncClient
+from fastapi_cache import FastAPICache
 
-from env_settings import settings
-from orm import Base, async_session_maker, engine
-from orm.models import Product, User, Transaction, Inventory
 from .mock_data.mock_inventories import mock_inventories
 from .mock_data.mock_products import mock_products
 from .mock_data.mock_users import mock_users
 from .mock_data.mock_transactions import mock_transactions
+from env_settings import settings
 
 
 @pytest.fixture(scope="session", autouse=True)
 async def prepere_database():
     assert 'db_test' in settings.POSTGRES_DSN.path
+
+    from orm import Base, async_session_maker, engine
+    from orm.models import Product, User, Transaction, Inventory
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -34,8 +35,28 @@ async def prepere_database():
         await session.commit()
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+@pytest.fixture(scope='function')
+async def client():
+    from main import app as fastapi_app
+
+    async with AsyncClient(transport=ASGITransport(app=fastapi_app), base_url="http://test") as client:
+        yield client
+
+
+@pytest.fixture(scope='function')
+async def session():
+    from orm import async_session_maker
+
+    async with async_session_maker() as session:
+        try:
+            transaction = await session.begin()
+            yield session
+        finally:
+            await transaction.rollback()
+
+
+@pytest.fixture(scope='function')
+async def clear_cache():
+    all_cache_namespaces = settings.CACHE_CONFIG.NAMESPACE.model_dump().values()
+    for namespace in all_cache_namespaces:
+        await FastAPICache.clear(namespace)
