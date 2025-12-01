@@ -1,8 +1,9 @@
 import datetime
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Sequence
 
 from fastapi import Depends
 from sqlalchemy import desc, func, select
+from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from orm import get_async_session
@@ -37,7 +38,7 @@ class ProductDatabaseService(DatabaseService):
         await self.session.refresh(product)
         return product
 
-    async def get_popular_products(self) -> list[Product]:
+    async def get_popular_products(self) -> Sequence[Row[tuple[Product, int]]]:
         timedelta = datetime.datetime.now().astimezone() - datetime.timedelta(days=7)
         statement = (
             select(self.model, func.count(Transaction.id).label('purchase_count'))
@@ -52,7 +53,7 @@ class ProductDatabaseService(DatabaseService):
         )
 
         result = await self.session.execute(statement)
-        return list(result.all())
+        return result.all()
 
 
 async def get_product_database_service(

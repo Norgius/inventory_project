@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
+from app_context import limiter_var
 from env_settings import settings
 from services import (
     InventoryDatabaseService,
@@ -23,7 +24,6 @@ from ._schemas import (
 from .._common_types import ErrorModel
 from .._decorators import idempotent
 from .._error_messages import USER_ALREADY_EXISTS, USER_NOT_FOUND
-from app_context import limiter_var
 
 router = APIRouter(
     prefix='/users',

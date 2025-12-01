@@ -9,20 +9,20 @@ mock_users = [
       "username": "Алисия",
       "email": "alice@example.com",
       "balance": 1500,
-      "created_at": seven_days_ago
+      "created_at": seven_days_ago,
     },
     {
       "id": 2,
       "username": "Боб",
       "email": "bob@example.com",
       "balance": 800,
-      "created_at": five_days_ago
+      "created_at": five_days_ago,
     },
     {
       "id": 3,
       "username": "Черли",
       "email": "charlie@example.com",
       "balance": 2500,
-      "created_at": five_days_ago
-    }
+      "created_at": five_days_ago,
+    },
 ]

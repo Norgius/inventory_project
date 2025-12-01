@@ -1,7 +1,8 @@
 
 
 import hashlib
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from fastapi import Request, Response
 
@@ -19,7 +20,7 @@ def check_balance(user_balance: int, product_price: int) -> tuple[int, bool]:
 
 def key_builder(
     func: Callable[..., Any],
-    namespace: str,
+    namespace: str = '',
     *,
     request: Request | None = None,
     response: Response | None = None,

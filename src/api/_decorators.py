@@ -1,6 +1,7 @@
 import json
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable
+from typing import Any
 
 from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -13,7 +14,7 @@ from ._error_messages import IDEMPOTENCY_KEY_NOT_FOUND
 from .utils import key_builder
 
 
-def find_request(func: Callable[..., Any], **kwargs: dict[str, Any]) -> Request:
+def find_request(func: Callable[..., Any], **kwargs: dict[str, Any]) -> tuple[str, Request]:
     for key, value in kwargs.items():
         if isinstance(value, Request):
             return key, value
@@ -30,13 +31,12 @@ def idempotent(
     Требуется в заголовке передавать уникальный Idempotency-Key.
     """
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        func_location = f'{func.__module__}.{func.__name__}'
 
         @wraps(func)
         async def wrapper(*args: tuple[Any, ...], **kwargs: dict[str, Any]) -> JSONResponse | BaseModel:
-            key_request, request = find_request(func_location, **kwargs)
+            key_request, request = find_request(func, **kwargs)
 
-            idempotency_key = request.headers.get('Idempotency-Key')
+            idempotency_key = request.headers.get('Idempotency-Key')  # pyright: ignore[reportAttributeAccessIssue]
             if not idempotency_key:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,

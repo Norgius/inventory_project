@@ -1,21 +1,22 @@
 import pytest
-from sqlalchemy import insert
-from httpx import ASGITransport, AsyncClient
 from fastapi_cache import FastAPICache
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy import insert
+
+from env_settings import settings
 
 from .mock_data.mock_inventories import mock_inventories
 from .mock_data.mock_products import mock_products
-from .mock_data.mock_users import mock_users
 from .mock_data.mock_transactions import mock_transactions
-from env_settings import settings
+from .mock_data.mock_users import mock_users
 
 
 @pytest.fixture(scope="session", autouse=True)
 async def prepere_database():
-    assert 'db_test' in settings.POSTGRES_DSN.path
+    assert 'db_test' in settings.POSTGRES_DSN.path  # type: ignore
 
     from orm import Base, async_session_maker, engine
-    from orm.models import Product, User, Transaction, Inventory
+    from orm.models import Inventory, Product, Transaction, User
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)

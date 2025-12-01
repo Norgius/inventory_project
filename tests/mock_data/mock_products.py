@@ -5,7 +5,7 @@ mock_products = [
       "description": "Restores 50 health points",
       "price": 100,
       "type": "consumable",
-      "is_active": True
+      "is_active": True,
     },
     {
       "id": 2,
@@ -13,7 +13,7 @@ mock_products = [
       "description": "A powerful enchanted sword",
       "price": 500,
       "type": "permanent",
-      "is_active": True
+      "is_active": True,
     },
     {
       "id": 3,
@@ -21,7 +21,7 @@ mock_products = [
       "description": "Restores 30 mana points",
       "price": 80,
       "type": "consumable",
-      "is_active": True
+      "is_active": True,
     },
     {
       "id": 4,
@@ -29,7 +29,7 @@ mock_products = [
       "description": "Shield made from dragon scales",
       "price": 750,
       "type": "permanent",
-      "is_active": True
+      "is_active": True,
     },
     {
       "id": 5,
@@ -37,7 +37,7 @@ mock_products = [
       "description": "Pack of 20 arrows",
       "price": 50,
       "type": "consumable",
-      "is_active": True
+      "is_active": True,
     },
     {
       "id": 6,
@@ -45,6 +45,6 @@ mock_products = [
       "description": "Robe that enhances magical abilities",
       "price": 300,
       "type": "permanent",
-      "is_active": True
-    }
+      "is_active": True,
+    },
 ]

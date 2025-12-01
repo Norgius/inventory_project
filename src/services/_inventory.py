@@ -21,7 +21,7 @@ class InventoryDatabaseService(DatabaseService):
             self,
             user_id: int,
             product: Product,
-    ) -> tuple[Inventory | None, bool]:
+    ) -> tuple[Inventory, bool]:
         statement = (
             select(self.model)
             .where(self.model.user_id == user_id, self.model.product_id == product.id))
@@ -39,7 +39,7 @@ class InventoryDatabaseService(DatabaseService):
         self.session.add(inventory)
         return inventory, created
 
-    async def increase_product_quantity(self, inventory: Inventory) -> Inventory:
+    async def increase_product_quantity(self, inventory: Inventory) -> None:
         inventory.quantity += 1
         inventory.purchased_at = datetime.datetime.now().astimezone()
         self.session.add(inventory)
@@ -53,7 +53,7 @@ class InventoryDatabaseService(DatabaseService):
             .order_by(-self.model.quantity)
         )
         result = await self.session.execute(statement)
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     async def use_product(self, product_id: int, user_id: int) -> Inventory | None:
         statement = (

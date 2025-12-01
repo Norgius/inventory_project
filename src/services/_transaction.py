@@ -20,11 +20,11 @@ class TransactionDatabaseService(DatabaseService):
             self.session.add(user)
 
             inventory_database_service = InventoryDatabaseService(session=self.session)
-            inventory, created = await inventory_database_service.get_or_create(
+            inventory, _ = await inventory_database_service.get_or_create(
                 user_id=user.id,
                 product=product,
             )
-            if not created and product.type == ProductType.consumable:
+            if product.type == ProductType.consumable:
                 await inventory_database_service.increase_product_quantity(inventory=inventory)
 
             transaction = self.model(
