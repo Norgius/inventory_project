@@ -17,10 +17,17 @@ class CacheNamespace(BaseModel):
 class CacheConfig(BaseModel):
     PREFIX: str = 'fastapi-cache'
     IDEMPOTENTY_TIMER: int = 3600
-    """Таймер идемпотентности в секундах для POST/PUTCH запросов,
-    при условии, что на них навешан декоратор idempotent
+    """Время идемпотентности для POST/PUTCH запросов в секундах,
+    параметр необходим для декоратора idempotent
     """
+    POPULAR_PRODUCT_TIMER: int = 900
+    """Время кеширования для эндпоинта популярных продуктов в секундах."""
     NAMESPACE: CacheNamespace = CacheNamespace()
+
+
+class ApiSettings(BaseModel):
+    LAST_DAYS_NUMBER: int = 7
+    """Кол-во последних дней для endpoints аналитики."""
 
 
 class ENV(BaseSettings):
@@ -33,6 +40,8 @@ class ENV(BaseSettings):
     """Настройки для кэша"""
     RATE_LIMITER: RateLimiterSettings = RateLimiterSettings()
     """Настройки для ограничения кол-ва запросов за отведенное время."""
+    API_SETTINGS: ApiSettings = ApiSettings()
+    """Настройки для параметров api endpoints."""
 
     model_config = SettingsConfigDict(
         env_file='.env',

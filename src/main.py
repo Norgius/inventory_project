@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     else:
         cache_backend_client = InMemoryBackend()
 
-    FastAPICache.init(cache_backend_client, prefix="fastapi-cache")
+    FastAPICache.init(cache_backend_client, prefix=settings.CACHE_CONFIG.PREFIX)
     app.state.main_app = app.state
 
     yield
@@ -36,7 +36,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 if settings.MODE == 'test':
     cache_backend_client = InMemoryBackend()
-    FastAPICache.init(cache_backend_client, prefix="fastapi-cache")
+    FastAPICache.init(cache_backend_client, prefix=settings.CACHE_CONFIG.PREFIX)
 
 app = FastAPI(lifespan=lifespan)
 

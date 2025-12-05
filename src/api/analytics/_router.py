@@ -15,10 +15,11 @@ router = APIRouter(
 
 @router.get(
     '/popular-products',
+    summary=f'Получить до 5 популярных продуктов за последние {settings.API_SETTINGS.LAST_DAYS_NUMBER} дней',
     response_model=list[ProductResponse],
 )
 @cache(
-    expire=900,
+    expire=settings.CACHE_CONFIG.POPULAR_PRODUCT_TIMER,
     key_builder=key_builder,
     namespace=settings.CACHE_CONFIG.NAMESPACE.POPULAR_PRODUCTS,
 )

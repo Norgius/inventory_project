@@ -21,6 +21,7 @@ services:
       MODE: dev
       POSTGRES_DSN: postgresql+asyncpg://postgres_user:postgres_password@postgres:5432/postgres_db
       REDIS_DSN: redis://redis:6379/0
+      CACHE_CONFIG__POPULAR_PRODUCT_TIMER: 5
     ports:
       - 127.0.0.1:8000:80
     volumes:

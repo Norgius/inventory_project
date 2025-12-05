@@ -6,6 +6,7 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.engine import Row
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from env_settings import settings
 from orm import get_async_session
 from orm.models import Product, ProductType, Transaction, TransactionStatus
 
@@ -39,7 +40,10 @@ class ProductDatabaseService(DatabaseService):
         return product
 
     async def get_popular_products(self) -> Sequence[Row[tuple[Product, int]]]:
-        timedelta = datetime.datetime.now().astimezone() - datetime.timedelta(days=7)
+        timedelta = (
+            datetime.datetime.now().astimezone() -
+            datetime.timedelta(days=settings.API_SETTINGS.LAST_DAYS_NUMBER)
+        )
         statement = (
             select(self.model, func.count(Transaction.id).label('purchase_count'))
             .join(Transaction, Transaction.product_id == self.model.id)
