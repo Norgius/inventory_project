@@ -36,7 +36,7 @@ def idempotent(
         async def wrapper(*args: tuple[Any, ...], **kwargs: dict[str, Any]) -> JSONResponse | BaseModel:
             key_request, request = find_request(func, **kwargs)
 
-            idempotency_key = request.headers.get('Idempotency-Key')  # pyright: ignore[reportAttributeAccessIssue]
+            idempotency_key = request.headers.get('Idempotency-Key')
             if not idempotency_key:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
